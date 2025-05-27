@@ -1,15 +1,108 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Admin {
+  admin_id          Int       @id @default(autoincrement())
+  firstname_admin   String
+  lastname_admin    String
+  password_admin    String
+  email_admin       String    @unique
+  phone_number_admin String
+
+  tasks             Task[]    @relation("TaskByAdmin")
+  evaluations       Evaluation[]
+}
+
+model Trainee {
+  trainee_id          Int       @id @default(autoincrement())
+  firstname_trainee   String
+  lastname_trainee    String
+  password_trainee    String
+  email_trainee       String    @unique
+  phone_number_trainee String
+  school              String
+
+  tasks               Task[]    @relation("TaskByTrainee")
+  internships         Internship[]
+  projects            InternshipProject[]
+  rapports            Rapport[]
+}
+
+model Internship {
+  internship_id        Int       @id @default(autoincrement())
+  category             String
+  start_date_internship DateTime
+  end_date_internship   DateTime
+  convention            String?
+
+  trainee              Trainee   @relation(fields: [trainee_id], references: [trainee_id])
+  trainee_id           Int
+
+  projects             InternshipProject[]
+  rapports             Rapport[]
+}
+
+model InternshipProject {
+  project_id           Int       @id @default(autoincrement())
+  name_project         String
+  description_project  String?
+  url_project          String?
+
+  internship           Internship @relation(fields: [internship_id], references: [internship_id])
+  internship_id        Int
+
+  trainee              Trainee    @relation(fields: [trainee_id], references: [trainee_id])
+  trainee_id           Int
+
+  tasks                Task[]
+  evaluations          Evaluation[]
+}
+
+model Task {
+  task_id             Int       @id @default(autoincrement())
+  task_name           String
+  description_task    String?
+  start_date_task     DateTime
+  end_date_task       DateTime
+  status              Boolean   @default(false)
+
+  admin               Admin?    @relation("TaskByAdmin", fields: [admin_id], references: [admin_id])
+  admin_id            Int?
+
+  trainee             Trainee?  @relation("TaskByTrainee", fields: [trainee_id], references: [trainee_id])
+  trainee_id          Int?
+
+  project             InternshipProject? @relation(fields: [project_id], references: [project_id])
+  project_id          Int?
+}
+
+model Evaluation {
+  evaluation_id      Int       @id @default(autoincrement())
+  date_evaluation    DateTime
+  remarks            String
+  grade              Int
+
+  admin              Admin     @relation(fields: [admin_id], references: [admin_id])
+  admin_id           Int
+
+  project            InternshipProject @relation(fields: [project_id], references: [project_id])
+  project_id         Int
+}
+
+model Rapport {
+  rapport_id         Int       @id @default(autoincrement())
+  week_rapport       DateTime
+  description_rapport String
+
+  trainee            Trainee   @relation(fields: [trainee_id], references: [trainee_id])
+  trainee_id         Int
+
+  internship         Internship @relation(fields: [internship_id], references: [internship_id])
+  internship_id      Int
 }
