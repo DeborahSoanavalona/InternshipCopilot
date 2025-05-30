@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@/*": ["app/*"] // ou "app/*" si tu as mis le code dans /app
+      "@/*": ["./src/*"] // ou "app/*" si tu as mis le code dans /app
     },
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -22,9 +22,6 @@
         "name": "next"
       }
     ],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
